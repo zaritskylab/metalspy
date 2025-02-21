@@ -1,3 +1,4 @@
+from .min_max_yeo_johnson_shift_5_7_iqr_intersection import min_max_yeo_johnson_shift_5_7_iqr_intersection
 from .min_max_shift_5_7_iqr_intersection import min_max_shift_5_7_iqr_intersection
 from .min_max_intersection import min_max_intersection
 from .extreme_cores import get_extreme_cores
