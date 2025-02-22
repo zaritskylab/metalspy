@@ -8,5 +8,5 @@ for METAL in "magnesium" "iron" "copper" "zinc"; do
     --export=HIST_SIZE=${HIST_SIZE},EXCLUDE_CORES=${EXCLUDE_CORES},METAL=${METAL},P=${P} \
     --job-name=baseline_hist_size_${HIST_SIZE}_${EXCLUDE_CORES}_${METAL}_${P} \
     --output=baseline_hist_size_${HIST_SIZE}_${EXCLUDE_CORES}_${METAL}_${P}.out \
-    baseline.batch
+    job-baseline.batch
 done

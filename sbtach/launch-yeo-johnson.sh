@@ -8,5 +8,5 @@ for METAL in "magnesium" "iron" "copper" "zinc"; do
     --export=HIST_SIZE=${HIST_SIZE},EXCLUDE_CORES=${EXCLUDE_CORES},METAL=${METAL},P=${P} \
     --job-name=yeo_johnson_hist_size_${HIST_SIZE}_${EXCLUDE_CORES}_${METAL}_${P} \
     --output=yeo_johnson_hist_size_${HIST_SIZE}_${EXCLUDE_CORES}_${METAL}_${P}.out \
-    yeo-johnson.batch
+    job-yeo-johnson.batch
 done
