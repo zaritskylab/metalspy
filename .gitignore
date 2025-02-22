@@ -2,3 +2,4 @@ __pycache__/
 *.csv
 *.xlsx
 *.h5
+*.png
