@@ -53,8 +53,7 @@ def main():
         'zinc': 20,
     }
     
-    output_file = './yeo_johnson.csv'
-    output_file = os.path.join('.', 'results', '4-metals', output_file)
+    output_file = os.path.join('.', 'results', '4-metals', 'yeo_johnson.csv')
     results_df = simple_classifiers(metal_to_hist_size, experiment_dir)
     results_df.to_csv(output_file, index=False)
 

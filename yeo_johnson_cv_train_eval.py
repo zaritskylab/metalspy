@@ -117,10 +117,10 @@ class CV_Pipeline:
         print('args.exclude_outlier_cores', exclude_outlier_cores, type(exclude_outlier_cores))
         
         metal = args.metal
-        percentile = 0.8
+        percentile = args.p
         
         print('exclude_outlier_cores', exclude_outlier_cores, 'histogram_size', histogram_size)
-        experiment_dir = os.path.join(self.experiments_dir, f'histogram-size-{histogram_size}')
+        experiment_dir = os.path.join(self.experiments_dir, f'histogram-size-{histogram_size}', f'p-{percentile}')
         experiment_dir = os.path.join(experiment_dir, 'exclude-outlier-cores' if exclude_outlier_cores else 'all-cores')
         print('initializing experiment dir', experiment_dir)
         if not os.path.exists(experiment_dir):
