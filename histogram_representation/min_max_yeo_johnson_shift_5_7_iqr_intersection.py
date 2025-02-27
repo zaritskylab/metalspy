@@ -77,7 +77,8 @@ class min_max_yeo_johnson_shift_5_7_iqr_intersection:
                 if (core.id + core.chunk_id) in outlier_cores:
                     table[channel].append(None)
                 else:
-                    core_df_log = stats.yeojohnson(core_df)[0]
+                    lmbda = stats.yeojohnson_normmax(core_df, brack=None)
+                    core_df_log = stats.yeojohnson(core_df, lmbda=lmbda)[0]
                     all_data_bin_edges = np.histogram_bin_edges(core_df_log, bins=bins_amount)
                     pixel_counts = np.histogram(core_df_log, bins=all_data_bin_edges)[0]
                     pixel_sum = pixel_counts.sum()
