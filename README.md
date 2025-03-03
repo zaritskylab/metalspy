@@ -1,16 +1,22 @@
 # Metal analysis pipeline for patient and tissue state prediction
-This is a pipeline for quantitaive analysis of spatial metal distributions as 2D maps of patient's tissue witin the context of predicting the state of the patient and the tissue.
+This project presents a pipeline for quantitative analysis of spatial metal distributions - given as 2D maps of patients' tissue - within the context of predicting the state of the patient and the tissue after treatment.
 
-This pipeline was exemplified on TNBC dataset of the Delta Tissue project. This dataset contains core biopsy tissue samples of TNBC patients before getting checmotherapy (NACT) treatment. Later these patients didn't respond to the treatment (state became worse) or they responded to the treatment (pathologically completely recovered - pCR).
+This pipeline was exemplified on TNBC dataset of the Delta Tissue project (currently unpublished. 
+This dataset contains core biopsy tissue samples of TNBC patients before getting checmotherapy (NACT) treatment. 
+After 5 years, the state of the patient was reexamined and the samples were annotated according to the patient response to treatment:
 
-This pipeline was exemplified on this dataset so the code is suited for the data formats supplied by Delta tissue and the analysis of metals and predicting the target state.
+Non responder (NR) - state became worse
+
+Responder (R) - pathologically completely recovered - pCR.
+
+The code is suited for the data formats supplied by Delta tissue and contains the analysis of metals and model predictions of the tissue state.
 
 ## Pipeline overview
 This pipeline has different variants but the shared steps among all of them are as follows:
-1. Remove outliers and background
-2. Represent each sample by vector representation that depends by the tissue's histogram.
-3. Feed this representation into Adaboost classifier that returns the probability for a sample to be non responder.
-4. Using patient's samples we can compute that patient's probability to be non responder.
+1. Cleaning: Removing outliers and background
+2. Input: A vector representation based on the tissue's histogram.
+3. Model: Running Adaboost classifier to return the probability for a non-responder sample.
+4. Patient prediction: Compute patient's probability to be non responder using its samples predictions.
 
 # Getting started
 I recommend setting up a virtual environment. Using e.g. miniconda, the project can be installed via:
@@ -38,12 +44,13 @@ This project expects to find the following files in `./la-icp-ms` directory:
 8. `resection_aq.h5` - containts the 5 channel (Magnesium, Manganese, Iron, Copper, Zinc) 2d images of resection tissue samples. After a patient didn't respond to a treatment, he underwent a surgery and resection is the tumor that had been cut during the surgery. Data is calibrated. Tissue medium is FFPE. No imaging issues. This data is a part of this project but it's never being used in the pipeline or the analysis.
 
 ## TNBC Dataset access and download
-Download it from BGU SISE cluster from this path: `/sise/assafzar-group/assafzar/TNBC-metals-data` or ask Leor Rose (leorro@post.bgu.ac.il) for this data.
+Members at BGU lab can download the data from BGU SISE cluster in the following path: `/sise/assafzar-group/assafzar/TNBC-metals-data` 
+otherwise, ask Leor Rose (leorro@post.bgu.ac.il) for this data.
 
 ## Running single configuration of the pipeline
 The pipeline in this project has these variants:
-1. Baseline - background and outlier removal then tissue histogram representation is fed to Adaint clssifier.
-2. Hotspots excluded - same as Baseline but outliers and hotspots are removed together.
+1. Baseline steps: background and outlier removal, creating tissue histogram representation, running pretrained Adaboost classifier.
+2. Hotspots excluded steps: same as Baseline but outliers and hotspots are removed together.
 3. Positional encoding - same as Baseline but with positional encoding
 4. Yeo Johnson - same as Positional encoding but the histogram representation is computed after Yeo Johnson transform is applied.
 5. Yeo Johnson permutation test - this is a permutation test of Yeo Johson pipeline.
