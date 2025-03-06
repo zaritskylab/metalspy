@@ -1,7 +1,7 @@
 # Metal analysis pipeline for patient and tissue state prediction
 This project presents a pipeline for quantitative analysis of spatial metal distributions - given as 2D maps of patients' tissue - within the context of predicting the state of the patient and the tissue after treatment.
 
-This pipeline was exemplified on TNBC dataset of the Delta Tissue project (currently unpublished. 
+This pipeline was exemplified on TNBC dataset of the Delta Tissue project (currently unpublished). 
 This dataset contains core biopsy tissue samples of TNBC patients before getting checmotherapy (NACT) treatment. 
 After 5 years, the state of the patient was reexamined and the samples were annotated according to the patient response to treatment:
 
