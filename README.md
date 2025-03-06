@@ -15,7 +15,7 @@ The code is suited for the data formats supplied by Delta tissue and contains th
 This pipeline has different variants but the shared steps among all of them are as follows:
 1. Cleaning: Removing outliers and background
 2. Input: A vector representation based on the tissue's histogram.
-3. Model: Running Adaboost classifier to return the probability for a non-responder sample.
+3. Model: Training Adaboost classifier to return the probability for a non-responder sample.
 4. Patient prediction: Compute patient's probability to be non responder using its samples predictions.
 
 # Getting started
