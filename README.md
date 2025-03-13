@@ -43,9 +43,10 @@ This project expects to find the following files in `./la-icp-ms` directory:
 5. `aq.h5` - this is the first version of the `aq_cores_1.h5` file, they contain the same core tissue samples. `aq_cores_1.h5` has better image reconstruction and calibration. This file is mainly used to read which channels exist, but this can be done also via the `aq_cores_1.h5` file.
 8. `resection_aq.h5` - contains the 5 channel (Magnesium, Manganese, Iron, Copper, Zinc) 2d images of resection tissue samples. After a patient didn't respond to a treatment, he underwent a surgery and resection is the tumor that had been cut during the surgery. Data is calibrated. Tissue medium is FFPE. No imaging issues. This data is a part of this project but it's never being used in the pipeline or the analysis.
 
-## TNBC Dataset access and download
-Members at BGU lab can download the data from BGU SISE cluster in the following path: `/sise/assafzar-group/assafzar/TNBC-metals-data`
+## TNBC Dataset and research result download
+Members at BGU lab can download the data from BGU SISE cluster in the following path: `/sise/assafzar-group/assafzar/metalspy/TNBC-metals-data`
 otherwise, ask Leor Rose (leorro@post.bgu.ac.il) for this data.
+And all experiment excutions can be downloaded from BGU SISE cluster in the following path: `/sise/assafzar-group/assafzar/metalspy/TNBC-metals-model`
 
 ## Single metal classification pipline configurations:
 The input of each of these piplines is a single metal channel:
@@ -62,28 +63,53 @@ This pipeline uses the output probabilities of the model above on 4 non corrupte
 
 ### Baseline
 ```sh
-python baseline_cv_train_eval.py --hist-size 20 --exclude_outlier_cores False --metal iron --p 0.8
+python baseline_cv_train_eval.py \
+    --config ./config/baseline.yml \
+    --hist-size 20 \
+    --exclude_outlier_cores False \
+    --metal iron \
+    --p 0.8
 ```
 
 ### Hotspots excluded
 ```sh
-python hotspots_excluded_cv_train_eval.py --hist-size 20 --exclude_outlier_cores False --metal iron --p 0.8
+python hotspots_excluded_cv_train_eval.py \
+    --config ./config/hotspots_excluded.yml \
+    --hist-size 20 \ 
+    --exclude_outlier_cores False \
+    --metal iron \
+    --p 0.8
 ```
 
 ### Positional encoding
 ```sh
-python positonal_encoding_cv_train_eval.py --hist-size 20 --exclude_outlier_cores False --metal iron --p 0.8
+python positonal_encoding_cv_train_eval.py \
+    --config ./config/positional_encoding.yml \
+    --hist-size 20 \
+    --exclude_outlier_cores False \
+    --metal iron \
+    --p 0.8
 ```
 
 ### Yeo Johnson
 ```sh
-python yeo_johnson_cv_train_eval.py --hist-size 20 --exclude_outlier_cores False --metal iron --p 0.8
+python yeo_johnson_cv_train_eval.py \
+    --config ./config/yeo_johnson.yml \
+    --hist-size 20 \
+    --exclude_outlier_cores False \
+    --metal iron \
+    --p 0.8
 ```
 
 ### Yeo Johnson permutation test
-`p` is hard coded, but seed for label permutation is configurable.
+`percentile` and `model_seed` are configurable via the config file. In the research work the percentile is 0.8 (choosen because of experiements of baseline and hotspots excluded) and `model_seed` is 11 (choosen arbitrarly). Note: `--seed` passed as argument controls the seed of label permutation and `model_seed` controls the random seed of the ai model, `model_seed` is always fixed and only `--seed` was repeated 1,000 times with different seeds.
 ```sh
-python yeo_johnson_permutation_test_cv_train_eval.py --hist-size 20 --exclude_outlier_cores False --metal iron --seed 11
+python yeo_johnson_permutation_test_cv_train_eval.py \
+    --config ./config/yeo_johnson_permutation_test.yml \
+    --hist-size 20 \
+    --exclude_outlier_cores False \
+    --metal iron \
+    --seed 11
 ```
 
 ### 4 Metals classifier

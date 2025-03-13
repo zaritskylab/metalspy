@@ -3,6 +3,7 @@ import pandas as pd
 import warnings
 import argparse
 import os
+import yaml
 from sklearn.metrics import roc_auc_score
 from data_loading import get_cores
 from tqdm import tqdm
@@ -12,16 +13,18 @@ from sklearn.tree import DecisionTreeClassifier
 from histogram_representation import min_max_yeo_johnson_shift_5_7_iqr_intersection, get_extreme_cores
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-cores_dataset = get_cores()
+cores_dataset = None
 
 class CV_Pipeline:
 
-    def __init__(self, experiments_dir) -> None:
+    def __init__(self, experiments_dir, model_seed, percentile) -> None:
         self.experiments_dir = experiments_dir
+        self.model_seed = model_seed
+        self.percentile = percentile
     
     def test_specific_subset(self, histogram_size, predictive_channel, exclude_outlier_cores, seed, path_dir):
-        model_seed = 11
-        percentile = 0.8
+        model_seed = self.model_seed
+        percentile = self.percentile
         percentiles = {
             'magnesium': percentile,
             'iron': percentile,
@@ -104,14 +107,7 @@ class CV_Pipeline:
             print(f'Report dir: {results_csv_path}')
             results_report.to_csv(results_csv_path)
 
-    def experiment(self):
-        parser = argparse.ArgumentParser()
-        parser.add_argument('--hist-size', type=str, required=True)
-        parser.add_argument('--exclude_outlier_cores', type=str, required=True)
-        parser.add_argument('--metal', type=str, required=True)
-        parser.add_argument('--seed', type=str, required=True)
-        
-        args = parser.parse_args()
+    def experiment(self, args):
         histogram_size = int(args.hist_size)
         print('args.hist_size value is', args.hist_size, histogram_size)
         print('args.exclude_outlier_cores value is ', args.exclude_outlier_cores)
@@ -133,10 +129,25 @@ class CV_Pipeline:
         self.test_specific_subset(histogram_size, metal, exclude_outlier_cores, seed, experiment_dir)
 
 def main():
-    experiments_dir = os.path.join('.', 'results', 'yeo_johnson_permutation_test_cv_train_eval')
+    global cores_dataset
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', type=str, required=True)
+    parser.add_argument('--hist-size', type=str, required=True)
+    parser.add_argument('--exclude_outlier_cores', type=str, required=True)
+    parser.add_argument('--metal', type=str, required=True)
+    parser.add_argument('--seed', type=str, required=True)
+    
+    args = parser.parse_args()
+    
+    with open(args.config, "r") as file:
+        data = yaml.safe_load(file)
+    
+    cores_dataset = get_cores(data["data_root_directory"])
+    experiments_dir = data["experiments_root_dir_results"]
     print('Saving data to: ', experiments_dir)
     if not os.path.exists(experiments_dir):
         os.makedirs(experiments_dir)
-    test = CV_Pipeline(experiments_dir)
-    test.experiment()
+    test = CV_Pipeline(experiments_dir, )
+    test.experiment(args)
 main()

@@ -6,8 +6,6 @@ from typing import List, Tuple
 from tqdm import tqdm
 from datetime import datetime
 
-root_dir = '.'
-
 def periodic_table_naming_to_human_readable(channels: List[str]) -> List[str]:
     peridic_table_mapping = {
         'Cu': 'copper',
@@ -27,19 +25,6 @@ def read_channels_of_dataset(root_dir: str) -> List[str]:
         core_channels = periodic_table_naming_to_human_readable(core_channels)
         return core_channels
 
-channels = read_channels_of_dataset(root_dir)
-
-crashed_cores = [
-    'Leap052',
-    'Leap053',
-    'Leap054',
-    'Leap056',
-    'Leap057',
-    # 'Leap114',
-    'Leap115',
-    'Leap116',
-    'Leap118',
-]
 def read_metadata_records(root_dir) -> pd.DataFrame:
     metadata_records: pd.DataFrame = pd.read_excel(os.path.join(root_dir, 'la-icp-ms', 'LEAP code response data 05122023.xlsx'))
     metadata_records = metadata_records.rename(columns={
@@ -70,6 +55,17 @@ def read_metadata_records(root_dir) -> pd.DataFrame:
         'is-force': [],
         'next': [],
     }
+    crashed_cores = [
+        'Leap052',
+        'Leap053',
+        'Leap054',
+        'Leap056',
+        'Leap057',
+        # 'Leap114',
+        'Leap115',
+        'Leap116',
+        'Leap118',
+    ]
     for (_, row), is_extreme in zip(metadata_records.iterrows(), metadata_records['is_extreme'].isna()):
         if row['Response'] == 'no surgery yet':
             continue
@@ -110,7 +106,6 @@ def read_metadata_records(root_dir) -> pd.DataFrame:
                     next_leaps = []
                 parsed_metadata_records['next'].append(next_leaps)
     return pd.DataFrame(parsed_metadata_records).set_index('leap-id')
-metadata_df = read_metadata_records(root_dir)
 
 class Leap:
     
@@ -333,7 +328,7 @@ def read_dataset(root_dir, apply_lod: bool=True, verbose=False):
     return cores, resections, core_channels
 
 
-def remove_manganese_from_corrupted_cores(cores):
+def remove_manganese_from_corrupted_cores(cores, channels):
     corrupted_ids = [f'Leap{str(id).zfill(3)}' for id in range(69, 152)]
     manganese_index = channels.index('manganese')
     corrupted_leaps = [core for core in cores if core.id in corrupted_ids]
@@ -341,7 +336,7 @@ def remove_manganese_from_corrupted_cores(cores):
         leap.pixels.drop(inplace=True, columns=['manganese'])
         leap.image[:, :, manganese_index] = np.nan
 
-def get_core_ids_of_that_are_not_first():
+def get_core_ids_of_that_are_not_first(metadata_df):
     def get_next_ids(next_leaps):
         return [
             leap 
@@ -351,12 +346,14 @@ def get_core_ids_of_that_are_not_first():
     next_ids_per_leap = metadata_df['next'].apply(get_next_ids)
     return [e for array in next_ids_per_leap.to_list() for e in array]
 
-def get_cores():
+def get_cores(root_dir):
+    channels = read_channels_of_dataset(root_dir)
+    metadata_df = read_metadata_records(root_dir)
     cores_new, resections_new, channels_new = read_dataset(root_dir, apply_lod=False, verbose=False)
 
-    remove_manganese_from_corrupted_cores(cores_new)
+    remove_manganese_from_corrupted_cores(cores_new, channels)
 
-    core_ids_not_first = get_core_ids_of_that_are_not_first()
+    core_ids_not_first = get_core_ids_of_that_are_not_first(metadata_df)
     core_ids_frozen = metadata_df.index[(metadata_df['leap-type'] == 'core') & (metadata_df['medium-type'] == 'frozen')].to_list()
     cores_to_exclude = pd.Series(core_ids_frozen + core_ids_not_first).unique().tolist()
     print('Excluded cores')

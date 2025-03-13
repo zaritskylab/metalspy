@@ -10,3 +10,4 @@ numpy==1.26.2
 h5py==3.10.0
 openpyxl==3.1.5
 jupyterlab==4.3.5
+PyYAML==6.0.2

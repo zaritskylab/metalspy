@@ -25,4 +25,9 @@ module load anaconda				### load anaconda module (must be present when working w
 source activate research				### activate a conda environment, replace my_env with your conda environment
 ## jupyter lab					### this command executes jupyter lab – replace with your own command
 cd .. && \
-python hotspots_excluded_cv_train_eval.py --hist-size $HIST_SIZE --exclude_outlier_cores $EXCLUDE_CORES --metal $METAL --p $P
+python hotspots_excluded_cv_train_eval.py \
+    --config ./config/hotspots_excluded.yml \
+    --hist-size $HIST_SIZE \
+    --exclude_outlier_cores $EXCLUDE_CORES \
+    --metal $METAL \
+    --p $P

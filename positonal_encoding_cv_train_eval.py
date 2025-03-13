@@ -3,6 +3,7 @@ import pandas as pd
 import warnings
 import argparse
 import os
+import yaml
 from sklearn.metrics import roc_auc_score
 from data_loading import get_cores
 from tqdm import tqdm
@@ -12,12 +13,13 @@ from sklearn.tree import DecisionTreeClassifier
 from histogram_representation import min_max_shift_5_7_iqr_intersection, get_extreme_cores
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-cores_dataset = get_cores()
+cores_dataset = None
 
 class CV_Pipeline:
 
-    def __init__(self, experiments_dir) -> None:
+    def __init__(self, experiments_dir, seeds) -> None:
         self.experiments_dir = experiments_dir
+        self.seeds = seeds
 
     def test_specific_subset(self, histogram_size, exclude_outlier_cores, p, predictive_channel_job, path_dir):
         percentiles = {
@@ -63,7 +65,7 @@ class CV_Pipeline:
                 X_test = np.stack([np.concatenate(x_i) for x_i in X_test])
                 leap_id = core_ids[test_index]
                 y_train = y[train_index]
-                for model_seed in [11, 19, 21, 22, 31, 36, 38, 54, 67, 82, 85, 88, 92, 94, 96, 112, 116, 140, 148, 156, 161, 177, 178, 212, 223, 225, 240, 242, 249, 276, 289, 293, 294, 300, 306, 309, 311, 320, 338, 342, 349, 358, 372, 373, 374, 382, 395, 418, 440, 444, 445, 465, 479, 480, 492, 494, 526, 567, 569, 586, 596, 600, 602, 606, 620, 633, 637, 641, 645, 647, 664, 689, 697, 708, 748, 753, 777, 794, 804, 812, 828, 831, 843, 858, 861, 875, 889, 891, 894, 897, 904, 917, 947, 962, 982, 983, 985, 987, 990, 998]:
+                for model_seed in self.seeds:
                     base_estimator = DecisionTreeClassifier(max_depth=3, min_samples_split=8, class_weight='balanced', random_state=model_seed)
                     clf = AdaBoostClassifier(estimator=base_estimator, random_state=model_seed)
                     clf.fit(X_train, y_train)
@@ -98,14 +100,7 @@ class CV_Pipeline:
                 print(f'Report dir: {results_csv_path}')
                 results_report.to_csv(results_csv_path)
 
-    def experiment(self):
-        parser = argparse.ArgumentParser()
-        parser.add_argument('--hist-size', type=str, required=True)
-        parser.add_argument('--exclude_outlier_cores', type=str, required=True)
-        parser.add_argument('--metal', type=str, required=True)
-        parser.add_argument('--p', type=str, required=True)
-
-        args = parser.parse_args()
+    def experiment(self, args):
         histogram_size = int(args.hist_size)
         print('args.hist_size value is', args.hist_size, histogram_size)
         print('args.exclude_outlier_cores value is ', args.exclude_outlier_cores)
@@ -124,10 +119,25 @@ class CV_Pipeline:
         self.test_specific_subset(histogram_size, exclude_outlier_cores, p, metal, experiment_dir)
 
 def main():
-    experiments_dir = os.path.join('.', 'results', 'positional_encoding_cv_train_eval')
+    global cores_dataset
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', type=str, required=True)
+    parser.add_argument('--hist-size', type=str, required=True)
+    parser.add_argument('--exclude_outlier_cores', type=str, required=True)
+    parser.add_argument('--metal', type=str, required=True)
+    parser.add_argument('--p', type=str, required=True)
+
+    args = parser.parse_args()
+    
+    with open(args.config, "r") as file:
+        data = yaml.safe_load(file)
+    
+    cores_dataset = get_cores(data["data_root_directory"])
+    experiments_dir = data["experiments_root_dir_results"]
     print('Saving data to: ', experiments_dir)
     if not os.path.exists(experiments_dir):
         os.makedirs(experiments_dir)
-    test = CV_Pipeline(experiments_dir)
-    test.experiment()
+    test = CV_Pipeline(experiments_dir, data["seeds"])
+    test.experiment(args)
 main()
