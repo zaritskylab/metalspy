@@ -17,8 +17,9 @@ cores_dataset = None
 
 class CV_Pipeline:
 
-    def __init__(self, experiments_dir, model_seed, percentile) -> None:
+    def __init__(self, experiments_dir, data_root_directory, model_seed, percentile) -> None:
         self.experiments_dir = experiments_dir
+        self.data_root_directory = data_root_directory
         self.model_seed = model_seed
         self.percentile = percentile
     
@@ -32,7 +33,7 @@ class CV_Pipeline:
             'zinc': percentile,
         }
         if exclude_outlier_cores:
-            outlier_cores = get_extreme_cores()
+            outlier_cores = get_extreme_cores(self.data_root_directory)
         else:
             outlier_cores = ['Leap095a']
         
@@ -53,7 +54,7 @@ class CV_Pipeline:
         
         is_printed = False
         reports = dict() 
-        processing = min_max_yeo_johnson_shift_5_7_iqr_intersection(percentiles, histogram_size, exclude_outlier_cores)
+        processing = min_max_yeo_johnson_shift_5_7_iqr_intersection(percentiles, histogram_size, exclude_outlier_cores, self.data_root_directory)
         if not os.path.isdir(os.path.join(path_dir, predictive_channel)):
             os.mkdir(os.path.join(path_dir, predictive_channel))
         
@@ -148,6 +149,6 @@ def main():
     print('Saving data to: ', experiments_dir)
     if not os.path.exists(experiments_dir):
         os.makedirs(experiments_dir)
-    test = CV_Pipeline(experiments_dir, )
+    test = CV_Pipeline(experiments_dir, data["data_root_directory"], data["model_seed"], data["percentile"])
     test.experiment(args)
 main()

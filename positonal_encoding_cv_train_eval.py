@@ -17,8 +17,9 @@ cores_dataset = None
 
 class CV_Pipeline:
 
-    def __init__(self, experiments_dir, seeds) -> None:
+    def __init__(self, experiments_dir, data_root_directory, seeds) -> None:
         self.experiments_dir = experiments_dir
+        self.data_root_directory = data_root_directory
         self.seeds = seeds
 
     def test_specific_subset(self, histogram_size, exclude_outlier_cores, p, predictive_channel_job, path_dir):
@@ -29,7 +30,7 @@ class CV_Pipeline:
             'zinc': p,
         }
         if exclude_outlier_cores:
-            outlier_cores = get_extreme_cores()
+            outlier_cores = get_extreme_cores(self.data_root_directory)
         else:
             outlier_cores = ['Leap095a']
         
@@ -50,7 +51,7 @@ class CV_Pipeline:
         
         for predictive_channel in [predictive_channel_job]:
             reports = dict()
-            processing = min_max_shift_5_7_iqr_intersection(percentiles, histogram_size, exclude_outlier_cores)
+            processing = min_max_shift_5_7_iqr_intersection(percentiles, histogram_size, exclude_outlier_cores, self.data_root_directory)
             if not os.path.isdir(os.path.join(path_dir, predictive_channel)):
                 os.mkdir(os.path.join(path_dir, predictive_channel))
             
@@ -138,6 +139,6 @@ def main():
     print('Saving data to: ', experiments_dir)
     if not os.path.exists(experiments_dir):
         os.makedirs(experiments_dir)
-    test = CV_Pipeline(experiments_dir, data["seeds"])
+    test = CV_Pipeline(experiments_dir, data["data_root_directory"], data["seeds"])
     test.experiment(args)
 main()

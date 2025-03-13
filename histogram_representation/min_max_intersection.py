@@ -18,10 +18,11 @@ def get_core_pixel_mask(core: Leap, metal_to_percentile: dict):
     return pixel_mask
 
 class min_max_intersection:
-    def __init__(self, metal_to_percentile: dict, histogram_size=None, exclude_outlier_cores=True):
+    def __init__(self, metal_to_percentile: dict, histogram_size=None, exclude_outlier_cores=True, root_dir=None):
         self.histogram_size = histogram_size
         self.exclude_outlier_cores = exclude_outlier_cores
         self.metal_to_percentile = metal_to_percentile
+        self.root_dir = root_dir
     
     def from_trainset(self, cores: List[Leap]):
         table = self.get_histogram(cores)
@@ -32,7 +33,7 @@ class min_max_intersection:
         return table
 
     def get_histogram(self, cores: List[Leap]):
-        outlier_cores = get_cores(self.exclude_outlier_cores)
+        outlier_cores = get_cores(self.exclude_outlier_cores, self.root_dir)
         bins_amount = self.histogram_size
         table = {
             'leap-id': [],

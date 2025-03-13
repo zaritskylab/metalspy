@@ -7,11 +7,12 @@ from .min_max_intersection import get_core_pixel_mask
 from sklearn.preprocessing import MinMaxScaler
 
 class min_max_shift_5_7_iqr_intersection:
-    def __init__(self, metal_to_percentile: dict, histogram_size=None, exclude_outlier_cores=True):
+    def __init__(self, metal_to_percentile: dict, histogram_size=None, exclude_outlier_cores=True, root_dir=None):
         self.histogram_size = histogram_size
         self.exclude_outlier_cores = exclude_outlier_cores
         self.metal_to_percentile = metal_to_percentile
         self.channel_properties = None
+        self.root_dir = root_dir
     
     def from_trainset(self, cores: List[Leap]):
         table, channel_properties = self.get_histogram(cores)
@@ -23,7 +24,7 @@ class min_max_shift_5_7_iqr_intersection:
         return table
 
     def get_histogram(self, cores: List[Leap], channel_properties=None):
-        outlier_cores = get_cores(self.exclude_outlier_cores)
+        outlier_cores = get_cores(self.exclude_outlier_cores, self.root_dir)
         bins_amount = self.histogram_size
         table = {
             'leap-id': [],
