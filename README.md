@@ -47,16 +47,18 @@ This project expects to find the following files in `./la-icp-ms` directory:
 Members at BGU lab can download the data from BGU SISE cluster in the following path: `/sise/assafzar-group/assafzar/TNBC-metals-data`
 otherwise, ask Leor Rose (leorro@post.bgu.ac.il) for this data.
 
-## Running single configuration of the pipeline
-The pipeline in this project has these variants:
-1. Baseline steps: background and outlier removal, creating tissue histogram representation, running pretrained Adaboost classifier.
-2. Hotspots excluded steps: same as Baseline but outliers and hotspots are removed together.
-3. Positional encoding - same as Baseline but with positional encoding
-4. Yeo Johnson - same as Positional encoding but the histogram representation is computed after Yeo Johnson transform is applied.
-5. Yeo Johnson permutation test - this is a permutation test of Yeo Johson pipeline.
-6. 4 Metals classifier - all the pipelines from (1) to (5) are single metal classification pipelines, an input is a single metal channel. This pipeline combines the probabilities of 4 pipelines applied on 4 non corrupted metals in our data: Magnesium, Iron, Copper and Zinc.
+## Single metal classification pipline configurations:
+The input of each of these piplines is a single metal channel:
+1. Baseline: background and outlier removal (keeping hotspots), creating tissue histogram representation, training Adaboost classifier.
+2. Validation (Hotspots excluded): same as Baseline but outliers and hotspots are removed together.
+3. Positional encoding - same as Baseline but with positional encoding.
+4. Yeo Johnson - same as Positional encoding but with Yeo-Johanson histogram representation.
+5. Yeo Johnson permutation test - permutation test of Yeo Johson pipeline.
 
 Each pipeline execution can be configured with different histogram representation size, include/exclude outlier cores, specify the classification metal, and `p` (percentile) threshold used for outlier (or hotspots) removal.
+
+## 4 Metals classifier:
+This pipeline uses the output probabilities of the model above on 4 non corrupted metals in our data: Magnesium, Iron, Copper and Zinc.
 
 ### Baseline
 ```sh
