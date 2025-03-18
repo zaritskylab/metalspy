@@ -25,9 +25,13 @@ conda activate metalspy
 
 pip install -r requirements.txt
 ```
+## TNBC Dataset and research result download
+Members at BGU lab can access the data and the trained models at BGU SISE cluster in the following path: `/sise/assafzar-group/assafzar/metalspy/` TNBC-metals-data and TNBC-metals-model, respectively.
+Otherwise, ask Leor Rose (leorro@post.bgu.ac.il) or Assaf Zaritsky (assafza@bgu.ac.il) for this data.
 
 ## TNBC Dataset setup
-This project expects to find the following files in `<base_dir>/la-icp-ms` directory:
+The path to the data of this project is defined in the config file under `data_root_directory`.
+This project expects to find the following files in `<data_root_directory>/la-icp-ms` directory:
 1. `240129 DeltaLeap.xlsx` - used for getting the imaging date for each core tissue sample.
 7. `LEAP code response data 05122023.xlsx` - used to get metadata about the core sample:
     * matching between core and resection
@@ -41,10 +45,6 @@ This project expects to find the following files in `<base_dir>/la-icp-ms` direc
 4. `aq_cores_2_FFPE.h5` - contains the 5 channel (Magnesium, Manganese, Iron, Copper, Zinc) 2d images of core tissue samples. The Manganese channel in all images is corrupted and unreliable. Data is calibrated. Tissue medium is FFPE.
 5. `aq.h5` - this is the first version of the `aq_cores_1.h5` file, they contain the same core tissue samples. `aq_cores_1.h5` has better image reconstruction and calibration. This file is mainly used to read which channels exist, but this can be done also via the `aq_cores_1.h5` file.
 8. `resection_aq.h5` - contains the 5 channel (Magnesium, Manganese, Iron, Copper, Zinc) 2d images of resection tissue samples. After a patient didn't respond to a treatment, he underwent a surgery and resection is the tumor that had been cut during the surgery. Data is calibrated. Tissue medium is FFPE. No imaging issues. This data is a part of this project but it's never being used in the pipeline or the analysis.
-
-## TNBC Dataset and research result download
-Members at BGU lab can access the data and the trained models at BGU SISE cluster in the following path: `/sise/assafzar-group/assafzar/metalspy/` TNBC-metals-data and TNBC-metals-model, respectively.
-Otherwise, ask Leor Rose (leorro@post.bgu.ac.il) or Assaf Zaritsky (assafza@bgu.ac.il) for this data.
 
 ## Single metal classification pipline configurations:
 The input of each of these piplines is a single metal channel:
