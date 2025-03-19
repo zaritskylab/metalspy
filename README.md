@@ -62,7 +62,7 @@ This pipeline uses the output probabilities of the model above on 4 non corrupte
 ### Baseline
 ```sh
 python baseline_cv_train_eval.py \
-    --config ./config/baseline.yml \
+    --config ./config/default_config.yml \
     --hist-size 20 \
     --exclude_outlier_cores False \
     --metal iron \
@@ -72,7 +72,7 @@ python baseline_cv_train_eval.py \
 ### Hotspots excluded
 ```sh
 python hotspots_excluded_cv_train_eval.py \
-    --config ./config/hotspots_excluded.yml \
+    --config ./config/default_config.yml \
     --hist-size 20 \ 
     --exclude_outlier_cores False \
     --metal iron \
@@ -82,7 +82,7 @@ python hotspots_excluded_cv_train_eval.py \
 ### Positional encoding
 ```sh
 python positonal_encoding_cv_train_eval.py \
-    --config ./config/positional_encoding.yml \
+    --config ./config/default_config.yml \
     --hist-size 20 \
     --exclude_outlier_cores False \
     --metal iron \
@@ -92,7 +92,7 @@ python positonal_encoding_cv_train_eval.py \
 ### Yeo Johnson
 ```sh
 python yeo_johnson_cv_train_eval.py \
-    --config ./config/yeo_johnson.yml \
+    --config ./config/default_config.yml \
     --hist-size 20 \
     --exclude_outlier_cores False \
     --metal iron \
@@ -103,7 +103,7 @@ python yeo_johnson_cv_train_eval.py \
 `percentile` and `model_seed` are configurable via the config file. In the research work the percentile is 0.8 (choosen because of experiements of baseline and hotspots excluded) and `model_seed` is 11 (choosen arbitrarly). Note: `--seed` passed as argument controls the seed of label permutation and `model_seed` controls the random seed of the ai model, `model_seed` is always fixed and only `--seed` was repeated 1,000 times with different seeds.
 ```sh
 python yeo_johnson_permutation_test_cv_train_eval.py \
-    --config ./config/yeo_johnson_permutation_test.yml \
+    --config ./config/default_permutation_test_config.yml \
     --hist-size 20 \
     --exclude_outlier_cores False \
     --metal iron \
