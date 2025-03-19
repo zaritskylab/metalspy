@@ -1,5 +1,5 @@
 data_root_directory: /sise/assafzar-group/assafzar/metalspy/TNBC-metals-data
-experiments_root_dir_results: ./results/baseline_cv_train_eval
+experiments_root_dir_results: ./results
 seeds:
  - 11
  - 19

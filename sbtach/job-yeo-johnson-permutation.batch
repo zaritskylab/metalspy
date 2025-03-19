@@ -26,7 +26,7 @@ source activate research				### activate a conda environment, replace my_env wit
 ## jupyter lab					### this command executes jupyter lab – replace with your own command
 cd .. && \
 python yeo_johnson_permutation_test_cv_train_eval.py \
-    --config ./config/yeo_johnson_permutation_test.yml \
+    --config ./config/default_permutation_test_config.yml \
     --hist-size $HIST_SIZE \
     --exclude_outlier_cores $EXCLUDE_CORES \
     --metal $METAL \

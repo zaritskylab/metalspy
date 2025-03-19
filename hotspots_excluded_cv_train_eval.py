@@ -140,6 +140,7 @@ def main():
     
     cores_dataset = get_cores(data["data_root_directory"])
     experiments_dir = data["experiments_root_dir_results"]
+    experiments_dir = os.path.join(experiments_dir, 'hotspots_excluded_cv_train_eval')
     print('Saving data to: ', experiments_dir)
     if not os.path.exists(experiments_dir):
         os.makedirs(experiments_dir)
