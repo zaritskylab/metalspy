@@ -129,7 +129,7 @@ def main():
         config = yaml.safe_load(file)
     
     if args.config is not None:
-        with open(default_config_path, "r") as file:
+        with open(args.config, "r") as file:
             custom_config = yaml.safe_load(file)
             config['data_root_directory'] = custom_config.get('data_root_directory', config['data_root_directory'])
             config['experiments_root_dir_results'] = custom_config.get('experiments_root_dir_results', config['experiments_root_dir_results'])
@@ -150,7 +150,7 @@ def main():
 
     print('====Config===')
     for key, value in config.items():
-        print(f'key:', value, type(value))
+        print(f'{key}:', value, type(value))
     print('=============')
     cores_dataset = get_cores(config["data_root_directory"])
     experiments_dir = config["experiments_root_dir_results"]
