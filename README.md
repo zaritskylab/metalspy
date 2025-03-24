@@ -62,52 +62,61 @@ Each pipeline execution can be configured with different histogram representatio
 This pipeline uses the output probabilities of the model above on 4 non corrupted metals in our data: Magnesium, Iron, Copper and Zinc.
 
 ## Run:
-### Baseline
+
+### Configuration
+All experiments can use the default configuration in `./config/default_config.yml` used in this research.
+In case you want to set custom configuration create a yaml config file with exact keys as in `./config/default_config.yml`.
+If some configuration is ommited from the custom file then the parameter will get the default value from `./config/default_config.yml`.
+You can pass parameter via program arguments too. When each program argument is optional. Example:
 ```sh
 python baseline_cv_train_eval.py \
-    --config ./config/default_config.yml \
+    --config ./path/to/custom-config.yml \
     --hist-size 20 \
     --exclude_outlier_cores False \
     --metal iron \
     --p 0.8
+```
+
+Parameters will be set through:
+- Command line arguments (highest priority)
+- Custom config file
+- Default config file (lowest priority)
+
+### Baseline
+```sh
+python baseline_cv_train_eval.py
 ```
 ### Hotspots excluded
 ```sh
-python hotspots_excluded_cv_train_eval.py \
-    --config ./config/default_config.yml \
-    --hist-size 20 \ 
-    --exclude_outlier_cores False \
-    --metal iron \
-    --p 0.8
+python hotspots_excluded_cv_train_eval.py
 ```
 ### Positional encoding
 ```sh
-python positonal_encoding_cv_train_eval.py \
-    --config ./config/default_config.yml \
-    --hist-size 20 \
-    --exclude_outlier_cores False \
-    --metal iron \
-    --p 0.8
+python positonal_encoding_cv_train_eval.py
 ```
 ### Yeo Johnson
 ```sh
-python yeo_johnson_cv_train_eval.py \
-    --config ./config/default_config.yml \
-    --hist-size 20 \
-    --exclude_outlier_cores False \
-    --metal iron \
-    --p 0.8
+python yeo_johnson_cv_train_eval.py
 ```
 ### Yeo Johnson permutation test
 `percentile` and `model_seed` are configurable via the config file. In the research work the percentile is 0.8 (choosen because of experiements of baseline and hotspots excluded) and `model_seed` is 11 (choosen arbitrarly). Note: `--seed` passed as argument controls the seed of label permutation and `model_seed` controls the random seed of the ai model, `model_seed` is always fixed and only `--seed` was repeated 1,000 times with different seeds.
+
+This permutation test uses default configuration file in `./config/default_permutation_test_config.yml`.
+Similar as before the permutation test can be executed via optional program arguments and custom configuration file:
 ```sh
 python yeo_johnson_permutation_test_cv_train_eval.py \
-    --config ./config/default_permutation_test_config.yml \
+    --config ./path/to/custom-config.yml \
     --hist-size 20 \
     --exclude_outlier_cores False \
     --metal iron \
     --seed 11
 ```
+
+Or shortly:
+```sh
+python yeo_johnson_permutation_test_cv_train_eval.py
+```
+
 ### 4 Metals classifier
 ```sh
 python classifier_4_metal_yeo_johnson.py

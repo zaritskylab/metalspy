@@ -356,7 +356,7 @@ def get_cores(root_dir):
     core_ids_not_first = get_core_ids_of_that_are_not_first(metadata_df)
     core_ids_frozen = metadata_df.index[(metadata_df['leap-type'] == 'core') & (metadata_df['medium-type'] == 'frozen')].to_list()
     cores_to_exclude = pd.Series(core_ids_frozen + core_ids_not_first).unique().tolist()
-    print('Excluded cores')
+    print('Excluding frozen cores:')
     print(cores_to_exclude)
     cores_new = [core for core in cores_new if core.id not in cores_to_exclude]
     

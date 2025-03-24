@@ -105,45 +105,59 @@ class CV_Pipeline:
             print(f'Report dir: {results_csv_path}')
             results_report.to_csv(results_csv_path)
 
-    def experiment(self, args):
-        histogram_size = int(args.hist_size)
-        print('args.hist_size value is', args.hist_size, histogram_size)
-        print('args.exclude_outlier_cores value is ', args.exclude_outlier_cores)
-        exclude_outlier_cores = args.exclude_outlier_cores == 'True'
-        print('args.exclude_outlier_cores', exclude_outlier_cores, type(exclude_outlier_cores))
-        
-        metal = args.metal
-        p = float(args.p)
-        
-        print('exclude_outlier_cores', exclude_outlier_cores, 'histogram_size', histogram_size)
-        experiment_dir = os.path.join(self.experiments_dir, f'histogram-size-{histogram_size}', f'percentile-{p}')
-        experiment_dir = os.path.join(experiment_dir, 'exclude-outlier-cores' if exclude_outlier_cores else 'all-cores')
+    def experiment(self, config):
+        experiment_dir = os.path.join(self.experiments_dir, f'histogram-size-{config["hist_size"]}', f'percentile-{p}')
+        experiment_dir = os.path.join(experiment_dir, 'exclude-outlier-cores' if config['exclude_outlier_cores'] else 'all-cores')
         print('initializing experiment dir', experiment_dir)
         if not os.path.exists(experiment_dir):
             os.makedirs(experiment_dir)
-        self.test_specific_subset(histogram_size, exclude_outlier_cores, p, metal, experiment_dir)
+        self.test_specific_subset(config["hist_size"], config['exclude_outlier_cores'], config["p"], config["metal"], experiment_dir)
 
 def main():
     global cores_dataset
-
+    default_config_path = './config/default_config.yml'
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str, required=True)
-    parser.add_argument('--hist-size', type=str, required=True)
-    parser.add_argument('--exclude_outlier_cores', type=str, required=True)
-    parser.add_argument('--metal', type=str, required=True)
-    parser.add_argument('--p', type=str, required=True)
+    parser.add_argument('--config', type=str, default=None)
+    parser.add_argument('--hist-size', type=str, default=None)
+    parser.add_argument('--exclude_outlier_cores', type=str, default=None)
+    parser.add_argument('--metal', type=str, default=None)
+    parser.add_argument('--p', type=str, default=None)
     
     args = parser.parse_args()
     
-    with open(args.config, "r") as file:
-        data = yaml.safe_load(file)
+    with open(default_config_path, "r") as file:
+        config = yaml.safe_load(file)
     
-    cores_dataset = get_cores(data["data_root_directory"])
-    experiments_dir = data["experiments_root_dir_results"]
+    if args.config is not None:
+        with open(default_config_path, "r") as file:
+            custom_config = yaml.safe_load(file)
+            config['data_root_directory'] = custom_config.get('data_root_directory', config['data_root_directory'])
+            config['experiments_root_dir_results'] = custom_config.get('experiments_root_dir_results', config['experiments_root_dir_results'])
+            config['hist_size'] = custom_config.get('hist_size', config['hist_size'])
+            config['exclude_outlier_cores'] = custom_config.get('exclude_outlier_cores', config['exclude_outlier_cores'])
+            config['metal'] = custom_config.get('metal', config['metal'])
+            config['p'] = custom_config.get('p', config['p'])
+            config['seeds'] = custom_config.get('seeds', config['seeds'])
+    
+    if args.hist_size is not None:
+        config['hist_size'] = int(args.hist_size)
+    if args.exclude_outlier_cores is not None:
+        config['exclude_outlier_cores'] = args.exclude_outlier_cores == 'True'
+    if args.metal is not None:
+        config['metal'] = args.metal    
+    if args.p is not None:
+        config['p'] = float(args.p)
+
+    print('====Config===')
+    for key, value in config.items():
+        print(f'key:', value, type(value))
+    print('=============')
+    cores_dataset = get_cores(config["data_root_directory"])
+    experiments_dir = config["experiments_root_dir_results"]
     experiments_dir = os.path.join(experiments_dir, 'hotspots_excluded_cv_train_eval')
     print('Saving data to: ', experiments_dir)
     if not os.path.exists(experiments_dir):
         os.makedirs(experiments_dir)
-    test = CV_Pipeline(experiments_dir, data["data_root_directory"], data["seeds"])
-    test.experiment(args)
+    test = CV_Pipeline(experiments_dir, config["data_root_directory"], config["seeds"])
+    test.experiment(config)
 main()
