@@ -38,7 +38,7 @@ This project expects to find the following files in `<data_root_directory>/la-ic
     * medium of the tissue: FFPE, Frozen or fresh
     * force trial patient
     * is the patient extreme responder (died within 2 years)
-6. `cores-with-outlier-distribution-tissue-median.csv` - details on extreme cores. There is an option in the code to specify which cires to ignore. In our analysis we removed only `Leap095a`. For more details refer to `./histogram_representation/extreme_cores.py`.
+6. `cores-with-outlier-distribution-tissue-median.csv` - details on extreme cores. There is an option in the code to specify which cores to ignore. In our analysis we removed only `Leap095a`. For more details refer to `./histogram_representation/extreme_cores.py`.
 9. `tnbc_dataset.xlsx` - `analysis_id` and the samples response (responder or non responder). We used `analysis_id` to split the data into groups and apply cross validation, where instances refer to the tissue samples, and groups refer to the patients.
 2. `aq_cores_1.h5` - contains 5 channels (Magnesium, Manganese, Iron, Copper, Zinc) 2d images of core tissue samples. Data is calibrated. Tissue medium is FFPE. No imaging issues.
 3. `aq_cores_2_FF.h5` - contains 5 channels (Magnesium, Manganese, Iron, Copper, Zinc) 2d images of core tissue samples. The Manganese channel in all images is corrupted and unreliable. Data is calibrated. Tissue medium is Frozen.
