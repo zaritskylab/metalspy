@@ -32,21 +32,23 @@ Otherwise, ask Leor Rose (leorro@post.bgu.ac.il) or Assaf Zaritsky (assafza@bgu.
 ## TNBC Dataset setup
 The path to the data of this project is defined in the config file under `data_root_directory`.
 This project expects to find the following files in `<data_root_directory>/la-icp-ms` directory:
-1. `240129 DeltaLeap.xlsx` - used for getting the imaging date for each core tissue sample.
-7. `LEAP code response data 05122023.xlsx` - used to get metadata about the core sample:
+1. `240129 DeltaLeap.xlsx` - imaging date for each core tissue sample.
+7. `LEAP code response data 05122023.xlsx` - metadata of each core sample. Specifically:
     * matching between core and resection
     * medium of the tissue: FFPE, Frozen or fresh
     * force trial patient
-    * is the patient extreme responder - death within 2 years
-6. `cores-with-outlier-distribution-tissue-median.csv` - during initial EDA we found that some cores are extreme compared to the rest of the cores, for each metal. This is an artifact of the EDA and there is an option in the pipeline to remove these cores but then you will deal with less data when the TNBC dataset is super small. Hence, we decided to keep these samples and positional encoding will help with that issue. But we always removed `Leap095a` because it was super extreme and noisy, so we decided that this is an imaging issue. For more details of that file refer to this file `./histogram_representation/extreme_cores.py`.
-9. `tnbc_dataset.xlsx` - this file was prepared by Leor Rose, it's used for getting `analysis_id` and the samples response (responder or non responder) because it turns out that some of the labels (observations) aren't reliable in other files hence this file got the most curation. `analysis_id` is used to split the data into groups and then apply cross validation on the groups, when the instances are tissue samples and groups are patients.
-2. `aq_cores_1.h5` - contains the 5 channel (Magnesium, Manganese, Iron, Copper, Zinc) 2d images of core tissue samples. Data is calibrated. Tissue medium is FFPE. No imaging issues.
-3. `aq_cores_2_FF.h5` - contains the 5 channel (Magnesium, Manganese, Iron, Copper, Zinc) 2d images of core tissue samples. The Manganese channel in all images is corrupted and unreliable. Data is calibrated. Tissue medium is Frozen.
-4. `aq_cores_2_FFPE.h5` - contains the 5 channel (Magnesium, Manganese, Iron, Copper, Zinc) 2d images of core tissue samples. The Manganese channel in all images is corrupted and unreliable. Data is calibrated. Tissue medium is FFPE.
-5. `aq.h5` - this is the first version of the `aq_cores_1.h5` file, they contain the same core tissue samples. `aq_cores_1.h5` has better image reconstruction and calibration. This file is mainly used to read which channels exist, but this can be done also via the `aq_cores_1.h5` file.
-8. `resection_aq.h5` - contains the 5 channel (Magnesium, Manganese, Iron, Copper, Zinc) 2d images of resection tissue samples. After a patient didn't respond to a treatment, he underwent a surgery and resection is the tumor that had been cut during the surgery. Data is calibrated. Tissue medium is FFPE. No imaging issues. This data is a part of this project but it's never being used in the pipeline or the analysis.
+    * is the patient extreme responder (died within 2 years)
+6. `cores-with-outlier-distribution-tissue-median.csv` - details on extreme cores. There is an option in the code to specify which cires to ignore. In our analysis we removed only `Leap095a`. For more details refer to `./histogram_representation/extreme_cores.py`.
+9. `tnbc_dataset.xlsx` - `analysis_id` and the samples response (responder or non responder). We used `analysis_id` to split the data into groups and apply cross validation, where instances refer to the tissue samples, and groups refer to the patients.
+2. `aq_cores_1.h5` - contains 5 channels (Magnesium, Manganese, Iron, Copper, Zinc) 2d images of core tissue samples. Data is calibrated. Tissue medium is FFPE. No imaging issues.
+3. `aq_cores_2_FF.h5` - contains 5 channels (Magnesium, Manganese, Iron, Copper, Zinc) 2d images of core tissue samples. The Manganese channel in all images is corrupted and unreliable. Data is calibrated. Tissue medium is Frozen.
+4. `aq_cores_2_FFPE.h5` - contains 5 channels (Magnesium, Manganese, Iron, Copper, Zinc) 2d images of core tissue samples. The Manganese channel in all images is corrupted and unreliable. Data is calibrated. Tissue medium is FFPE.
+5. `aq.h5` - this is the first version of the `aq_cores_1.h5` file, they contain the same core tissue samples. `aq_cores_1.h5` has better image reconstruction and calibration. This file was used to read which channels exist.
+8. `resection_aq.h5` - contains 5 channels (Magnesium, Manganese, Iron, Copper, Zinc) 2d images of resection tissue samples. A patient that didn't respond to a treatment underwent a surgery. The resection is the tumor that had been cut during the surgery. Data is calibrated. Tissue medium is FFPE. No imaging issues. This data is a part of the Delta Tissue Project but wasn't used here.
 
-## Single metal classification pipline configurations:
+## Pipline configurations:
+
+### Single metal classification :
 The input of each of these piplines is a single metal channel:
 1. Baseline: background and outlier removal (keeping hotspots), creating tissue histogram representation, training Adaboost classifier.
 2. Validation (Hotspots excluded): same as Baseline but outliers and hotspots are removed together.
@@ -56,9 +58,10 @@ The input of each of these piplines is a single metal channel:
 
 Each pipeline execution can be configured with different histogram representation size, include/exclude outlier cores, specify the classification metal, and `p` (percentile) threshold used for outlier (or hotspots) removal.
 
-## 4 Metals classifier:
+### 4 Metals classifier:
 This pipeline uses the output probabilities of the model above on 4 non corrupted metals in our data: Magnesium, Iron, Copper and Zinc.
 
+## Run:
 ### Baseline
 ```sh
 python baseline_cv_train_eval.py \
@@ -68,7 +71,6 @@ python baseline_cv_train_eval.py \
     --metal iron \
     --p 0.8
 ```
-
 ### Hotspots excluded
 ```sh
 python hotspots_excluded_cv_train_eval.py \
@@ -78,7 +80,6 @@ python hotspots_excluded_cv_train_eval.py \
     --metal iron \
     --p 0.8
 ```
-
 ### Positional encoding
 ```sh
 python positonal_encoding_cv_train_eval.py \
@@ -88,7 +89,6 @@ python positonal_encoding_cv_train_eval.py \
     --metal iron \
     --p 0.8
 ```
-
 ### Yeo Johnson
 ```sh
 python yeo_johnson_cv_train_eval.py \
@@ -98,7 +98,6 @@ python yeo_johnson_cv_train_eval.py \
     --metal iron \
     --p 0.8
 ```
-
 ### Yeo Johnson permutation test
 `percentile` and `model_seed` are configurable via the config file. In the research work the percentile is 0.8 (choosen because of experiements of baseline and hotspots excluded) and `model_seed` is 11 (choosen arbitrarly). Note: `--seed` passed as argument controls the seed of label permutation and `model_seed` controls the random seed of the ai model, `model_seed` is always fixed and only `--seed` was repeated 1,000 times with different seeds.
 ```sh
@@ -109,15 +108,12 @@ python yeo_johnson_permutation_test_cv_train_eval.py \
     --metal iron \
     --seed 11
 ```
-
 ### 4 Metals classifier
 ```sh
 python classifier_4_metal_yeo_johnson.py
 ```
-
 ## Slurm job execution
 Slurm job definitions can be found in `./sbtach/*.batch`. And they can be executed by running the corresponding shell script
-
 
 # Figures
 Each pipeline creates a results directory in `./results`. And these results are analysed in `figures.ipynb`.
