@@ -118,7 +118,7 @@ class CV_Pipeline:
 
 def main():
     global cores_dataset
-    default_config_path = './config/default_config.yml'
+    default_config_path = './config/default_permutation_test_config.yml'
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str, default=None)
     parser.add_argument('--hist-size', type=str, default=None)
