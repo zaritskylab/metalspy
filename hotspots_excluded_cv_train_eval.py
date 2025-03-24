@@ -106,7 +106,7 @@ class CV_Pipeline:
             results_report.to_csv(results_csv_path)
 
     def experiment(self, config):
-        experiment_dir = os.path.join(self.experiments_dir, f'histogram-size-{config["hist_size"]}', f'percentile-{p}')
+        experiment_dir = os.path.join(self.experiments_dir, f'histogram-size-{config["hist_size"]}', f'percentile-{config["p"]}')
         experiment_dir = os.path.join(experiment_dir, 'exclude-outlier-cores' if config['exclude_outlier_cores'] else 'all-cores')
         print('initializing experiment dir', experiment_dir)
         if not os.path.exists(experiment_dir):
